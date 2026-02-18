@@ -1,10 +1,11 @@
 {
-  "name": "Digital Marketing Pass",
-  "short_name": "Pass",
-  "start_url": ".",
+  "name": "The Brand Welcome Pass",
+  "short_name": "BrandPass",
+  "start_url": "/",
   "display": "standalone",
-  "background_color": "#1e293b",
-  "theme_color": "#6366f1",
+  "background_color": "#0a0a0a",
+  "theme_color": "#bf953f",
+  "description": "Exclusive 50% discount for new family members.",
   "icons": [
     {
       "src": "https://cdn-icons-png.flaticon.com/512/1043/1043432.png",
