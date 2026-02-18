@@ -1,7 +1,11 @@
+// Force the Service Worker to wake up immediately
+self.addEventListener('install', () => self.skipWaiting());
+self.addEventListener('activate', (event) => event.waitUntil(clients.claim()));
+
 importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js');
 
-// Must match the config in index.html
+// --- PASTE THE EXACT SAME KEYS HERE AGAIN ---
 firebase.initializeApp({
     apiKey: "AIzaSyCdmxqyvuz2RNYe_HWRceg3JiJkH0c03TY",
     authDomain: "passta-85c7a.firebaseapp.com",
@@ -14,25 +18,11 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-// Customize background notifications
 messaging.onBackgroundMessage((payload) => {
-  console.log('[sw.js] Background message received ', payload);
-  
-  const notificationTitle = payload.notification.title || "Your Gift is Expiring!";
+  const notificationTitle = payload.notification.title;
   const notificationOptions = {
-    body: payload.notification.body || "Don't forget to use your 50% discount code WELCOME50.",
-    icon: 'https://cdn-icons-png.flaticon.com/512/1043/1043432.png', // Replace with your brand logo
-    badge: 'https://cdn-icons-png.flaticon.com/512/1043/1043432.png',
-    data: { url: 'https://www.thebrandwebsite.com' }
+    body: payload.notification.body,
+    icon: 'https://cdn-icons-png.flaticon.com/512/1043/1043432.png'
   };
-
   self.registration.showNotification(notificationTitle, notificationOptions);
-});
-
-// Handle notification click (Open website)
-self.addEventListener('notificationclick', (event) => {
-  event.notification.close();
-  event.waitUntil(
-    clients.openWindow(event.notification.data.url)
-  );
 });
