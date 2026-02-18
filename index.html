@@ -3,184 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Digital Welcome Gift | Premium Pass</title>
+    <title>Digital Welcome Gift</title>
     <link rel="manifest" href="manifest.json">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #0a0a0a; }
-        .gold-gradient {
-            background: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .card-glow {
-            box-shadow: 0 0 50px -12px rgba(191, 149, 63, 0.3);
-        }
-        .ticket-cutout {
-            position: relative;
-        }
-        .ticket-cutout::before, .ticket-cutout::after {
-            content: '';
-            position: absolute;
-            bottom: 85px;
-            width: 20px;
-            height: 20px;
-            background: #0a0a0a;
-            border-radius: 50%;
-        }
-        .ticket-cutout::before { left: -10px; }
-        .ticket-cutout::after { right: -10px; }
+        .gold-gradient { background: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     </style>
 </head>
-<body class="flex flex-col items-center justify-center min-h-screen p-6 overflow-hidden">
+<body class="flex flex-col items-center justify-center min-h-screen p-6 text-white">
 
-    <!-- THE PASS -->
-    <div id="digital-pass" class="w-full max-w-sm bg-zinc-900 border border-zinc-800 rounded-[2rem] overflow-hidden ticket-cutout card-glow relative">
+    <div class="w-full max-w-sm bg-zinc-900 border border-zinc-800 rounded-[2rem] p-8 text-center shadow-2xl">
+        <h2 class="text-zinc-400 text-xs uppercase tracking-widest mb-2">Exclusive Access</h2>
+        <h1 class="gold-gradient text-4xl font-black italic mb-6">50% OFF</h1>
         
-        <!-- Top Section -->
-        <div class="p-8 text-center border-b border-dashed border-zinc-700">
-            <div class="flex justify-center mb-4">
-                <div class="w-12 h-12 bg-zinc-800 rounded-full flex items-center justify-center border border-zinc-700">
-                    <span class="text-white font-black">B</span>
-                </div>
-            </div>
-            <p class="text-zinc-400 text-xs uppercase tracking-[0.3em] mb-1">Exclusive Access</p>
-            <h2 class="text-white text-lg font-bold">Welcome to the Family</h2>
+        <div id="couponCode" class="bg-black/40 border border-zinc-700 rounded-xl p-4 mb-8 font-mono text-2xl tracking-widest cursor-pointer">
+            WELCOME50
         </div>
 
-        <!-- Center Section -->
-        <div class="p-8 text-center">
-            <h1 class="gold-gradient text-4xl font-black italic leading-none mb-4">
-                50% OFF<br><span class="text-2xl">YOUR NEXT ORDER</span>
-            </h1>
-            
-            <!-- Coupon Box -->
-            <div onclick="copyCode()" class="mt-8 bg-black/40 border border-zinc-700 rounded-xl p-4 cursor-pointer active:scale-95 transition-transform group">
-                <p class="text-zinc-500 text-[10px] uppercase mb-1">Click to copy code</p>
-                <div class="flex justify-center items-center gap-2">
-                    <span id="couponCode" class="text-white font-mono text-2xl font-bold tracking-widest">WELCOME50</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-zinc-500 group-hover:text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
-                    </svg>
-                </div>
-            </div>
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="px-6 pb-8 flex flex-col gap-3">
-            <button id="installBtn" class="w-full bg-white text-black font-bold py-4 rounded-2xl hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
-                </svg>
-                Save to My Phone
-            </button>
-            <button id="shopBtn" class="w-full bg-zinc-800 text-white font-bold py-4 rounded-2xl hover:bg-zinc-700 transition-colors">
-                Shop Now
-            </button>
-        </div>
-    </div>
-
-    <!-- Toast Notification -->
-    <div id="toast" class="fixed bottom-10 bg-zinc-800 text-white px-6 py-3 rounded-full text-sm opacity-0 transition-opacity pointer-events-none">
-        Code copied to clipboard!
+        <button id="installBtn" class="w-full bg-white text-black font-bold py-4 rounded-2xl mb-3">
+            Save to My Phone
+        </button>
+        
+        <button id="shopBtn" class="w-full bg-zinc-800 text-white font-bold py-4 rounded-2xl">
+            Shop Now
+        </button>
     </div>
 
     <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, serverTimestamp, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-    import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
 
-    // 1. YOU MUST REPLACE THESE WITH REAL KEYS FROM FIREBASE CONSOLE
-    const firebaseConfig = {
-        apiKey: "AIzaSyCdmxqyvuz2RNYe_HWRceg3JiJkH0c03TY",
-        authDomain: "passta-85c7a.firebaseapp.com",
-        projectId: "passta-85c7a",
-        storageBucket: "passta-85c7a.firebasestorage.app",
-        messagingSenderId: "690886140069",
-        appId: "1:690886140069:web:13048793908361ad19ad4c",
-        measurementId: "G-TPRQP5CKTM"
-    };
-    
-    // 2. YOU MUST REPLACE THIS WITH YOUR REAL VAPID KEY
-    const VAPID_KEY = "BDZW5LIUsZcbZN8HUq7TE-7narmXfpBohJKQQ9R7RH-espBWqK8CpyxheUKqo2a5OWTtxKjY0JhnEDRvD2ZQcO8";
+        // --- PASTE YOUR FIREBASE KEYS BELOW ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyCdmxqyvuz2RNYe_HWRceg3JiJkH0c03TY",
+            authDomain: "passta-85c7a.firebaseapp.com",
+            projectId: "passta-85c7a",
+            storageBucket: "passta-85c7a.firebasestorage.app",
+            messagingSenderId: "690886140069",
+            appId: "1:690886140069:web:13048793908361ad19ad4c",
+            measurementId: "G-TPRQP5CKTM"
+        };
+        const VAPID_KEY = "BDZW5LIUsZcbZN8HUq7TE-7narmXfpBohJKQQ9R7RH-espBWqK8CpyxheUKqo2a5OWTtxKjY0JhnEDRvD2ZQcO8";
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const messaging = getMessaging(app);
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const messaging = getMessaging(app);
 
-    let deferredPrompt;
+        let deferredPrompt;
 
-    const logAction = async (actionName) => {
-        try {
-            await addDoc(collection(db, "analytics"), {
-                event: actionName,
-                timestamp: serverTimestamp()
-            });
-        } catch (e) { console.error("Firestore error:", e); }
-    };
+        // Analytics
+        const logAction = async (name) => {
+            try { await addDoc(collection(db, "analytics"), { event: name, time: serverTimestamp() }); } catch(e) {}
+        };
 
-    window.copyCode = () => {
-        const code = document.getElementById('couponCode').innerText;
-        navigator.clipboard.writeText(code);
-        const toast = document.getElementById('toast');
-        toast.classList.remove('opacity-0');
-        setTimeout(() => toast.classList.add('opacity-0'), 2000);
-        logAction("Coupon_Copied");
-    };
+        // PWA Setup
+        window.addEventListener('beforeinstallprompt', (e) => { 
+            e.preventDefault(); 
+            deferredPrompt = e; 
+        });
 
-    document.getElementById('shopBtn').addEventListener('click', () => {
-        logAction("Shop_Now_Click");
-        window.location.href = "https://www.thebrandwebsite.com";
-    });
+        // THE FIXED BUTTON LOGIC
+        document.getElementById('installBtn').addEventListener('click', async () => {
+            console.log("Button clicked...");
 
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        console.log("PWA Install prompt ready");
-    });
-
-    document.getElementById('installBtn').addEventListener('click', async () => {
-        console.log("Install Button Clicked");
-        
-        // A. Handle A2HS (Android/Chrome)
-        if (deferredPrompt) {
-            deferredPrompt.prompt();
-            deferredPrompt.userChoice.then((choice) => {
-                if (choice.outcome === 'accepted') logAction("PWA_Installed");
-            });
-        } else {
-            console.log("A2HS not supported on this browser/platform (Standard for iOS/Desktop)");
-        }
-
-        // B. Handle Notifications (This is the "Save" part)
-        try {
+            // 1. Ask for Notification Permission
             const permission = await Notification.requestPermission();
+            
             if (permission === 'granted') {
-                // IMPORTANT: Register Service Worker with the correct GitHub Path
-                const registration = await navigator.serviceWorker.register('firebase-messaging-sw.js');
-                
-                const token = await getToken(messaging, { 
-                    vapidKey: VAPID_KEY,
-                    serviceWorkerRegistration: registration 
-                });
-
-                if (token) {
-                    await setDoc(doc(db, "subscribers", token), {
-                        token: token,
-                        subscribedAt: serverTimestamp()
+                try {
+                    // 2. Register Service Worker with the correct GitHub subfolder path
+                    const registration = await navigator.serviceWorker.register('firebase-messaging-sw.js', {
+                        scope: '/Passta/'
                     });
-                    alert("Pass Saved to Cloud! You will receive reminders.");
-                    logAction("Subscriber_Added");
+
+                    // 3. WAIT for the worker to be ready (The Fix!)
+                    const activeWorker = await navigator.serviceWorker.ready;
+                    console.log("Worker Ready");
+
+                    // 4. Get the Notification Token
+                    const token = await getToken(messaging, { 
+                        vapidKey: VAPID_KEY,
+                        serviceWorkerRegistration: activeWorker
+                    });
+
+                    if (token) {
+                        await setDoc(doc(db, "subscribers", token), { token: token, date: serverTimestamp() });
+                        alert("Pass Saved! Look out for reminders.");
+                        logAction("Save_Successful");
+                    }
+
+                    // 5. Try to trigger the Install Prompt (Android Only)
+                    if (deferredPrompt) {
+                        deferredPrompt.prompt();
+                    }
+                } catch (err) {
+                    console.error("Error:", err);
+                    alert("Click again in 2 seconds (Still activating...)");
                 }
             } else {
-                alert("Permission denied. To save the pass, please allow notifications.");
+                alert("Please enable notifications to save the pass.");
             }
-        } catch (err) {
-            console.error("Setup Error:", err);
-            alert("Error: " + err.message);
-        }
-    });
-</script>
+        });
+
+        document.getElementById('shopBtn').addEventListener('click', () => {
+            logAction("Shop_Now_Click");
+            window.location.href = "https://www.thebrandwebsite.com";
+        });
+    </script>
 </body>
 </html>
