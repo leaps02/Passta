@@ -2,19 +2,29 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Digital Pass</title>
+    
+    <!-- APPLE SPECIFIC TAGS (REQUIRED FOR IPHONE) -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Digital Pass">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1043/1043432.png">
+    
     <link rel="manifest" href="manifest.json">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-black text-white flex items-center justify-center min-h-screen">
 
-    <div class="p-8 border border-zinc-800 rounded-3xl text-center bg-zinc-900 w-80">
-        <h1 class="text-2xl font-bold mb-6">50% DISCOUNT</h1>
-        <button id="installBtn" class="w-full bg-white text-black font-bold py-4 rounded-xl mb-4">
+    <div id="main-container" class="p-8 border border-zinc-800 rounded-3xl text-center bg-zinc-900 w-80">
+        <h1 class="text-2xl font-bold mb-6 italic gold-gradient">VIP PASS</h1>
+        
+        <!-- This button will change text based on the device -->
+        <button id="installBtn" class="w-full bg-white text-black font-bold py-4 rounded-xl mb-4 shadow-lg active:scale-95 transition-transform">
             SAVE TO PHONE
         </button>
-        <p id="msg" class="text-xs text-zinc-500"></p>
+        
+        <p id="instructions" class="text-[10px] text-zinc-500 uppercase tracking-widest"></p>
     </div>
 
     <script type="module">
@@ -22,7 +32,7 @@
         import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
 
-        // !!! DO NOT FORGET TO PUT YOUR REAL KEYS HERE !!!
+        // !!! PUT YOUR REAL KEYS HERE !!!
         const firebaseConfig = {
             apiKey: "AIzaSyCdmxqyvuz2RNYe_HWRceg3JiJkH0c03TY",
             authDomain: "passta-85c7a.firebaseapp.com",
@@ -38,33 +48,55 @@
         const db = getFirestore(app);
         const messaging = getMessaging(app);
 
-        document.getElementById('installBtn').addEventListener('click', async () => {
+        const btn = document.getElementById('installBtn');
+        const inst = document.getElementById('instructions');
+
+        // CHECK IF ON IPHONE SAFARI (NOT INSTALLED YET)
+        const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+
+        if (isIos && !isStandalone) {
+            btn.innerText = "ADD TO HOME SCREEN";
+            inst.innerText = "Tap Share > Add to Home Screen to activate";
+        }
+
+        btn.addEventListener('click', async () => {
             
-            // FIX: Check if the browser even supports Notifications (Fixes the iPhone error)
-            if (!("Notification" in window)) {
-                alert("iPhone detected: To save this pass, tap the 'Share' icon (square with arrow) at the bottom and select 'Add to Home Screen'. Then open the app from your home screen.");
+            // 1. If on iPhone Safari, show instructions
+            if (isIos && !isStandalone) {
+                alert("To Save: Tap the 'Share' icon (square with arrow) and select 'Add to Home Screen'. Then open the app from your home screen.");
                 return;
             }
 
+            // 2. If it's installed (or Android/Desktop), run the Save logic
             try {
-                const permission = await Notification.requestPermission();
-                if (permission !== 'granted') {
-                    alert("Please allow notifications so we can send your pass reminders.");
+                if (!("Notification" in window)) {
+                    alert("This browser does not support notifications.");
                     return;
                 }
 
-                // Register Service Worker
+                const permission = await Notification.requestPermission();
+                if (permission !== 'granted') {
+                    alert("Permission denied. Enable notifications in settings.");
+                    return;
+                }
+
+                // Register Service Worker correctly for GitHub subfolder
                 const reg = await navigator.serviceWorker.register('firebase-messaging-sw.js', { scope: '/Passta/' });
                 await navigator.serviceWorker.ready;
 
-                // Get Token
-                const token = await getToken(messaging, { vapidKey: VAPID_KEY, serviceWorkerRegistration: reg });
+                const token = await getToken(messaging, { 
+                    vapidKey: VAPID_KEY, 
+                    serviceWorkerRegistration: reg 
+                });
 
                 if (token) {
-                    await setDoc(doc(db, "subscribers", token), { token: token, time: serverTimestamp() });
-                    alert("SUCCESS! Pass saved to your phone.");
-                } else {
-                    alert("Token error. Make sure your VAPID key is correct in the code.");
+                    await setDoc(doc(db, "subscribers", token), { 
+                        token: token, 
+                        platform: isIos ? "iOS" : "Other",
+                        time: serverTimestamp() 
+                    });
+                    alert("SUCCESS! Your pass is saved.");
                 }
             } catch (err) {
                 alert("ERROR: " + err.message);
