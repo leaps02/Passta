@@ -87,89 +87,99 @@
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, serverTimestamp, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, serverTimestamp, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
 
-        // --- CONFIGURATION ---
-        const firebaseConfig = {
-    apiKey: "AIzaSyCdmxqyvuz2RNYe_HWRceg3JiJkH0c03TY",
-    authDomain: "passta-85c7a.firebaseapp.com",
-    projectId: "passta-85c7a",
-    storageBucket: "passta-85c7a.firebasestorage.app",
-    messagingSenderId: "690886140069",
-    appId: "1:690886140069:web:13048793908361ad19ad4c",
-    measurementId: "G-TPRQP5CKTM"
-        };
-        const VAPID_KEY = "BDZW5LIUsZcbZN8HUq7TE-7narmXfpBohJKQQ9R7RH-espBWqK8CpyxheUKqo2a5OWTtxKjY0JhnEDRvD2ZQcO8";
-        // ---------------------
+    // 1. YOU MUST REPLACE THESE WITH REAL KEYS FROM FIREBASE CONSOLE
+    const firebaseConfig = {
+        apiKey: "AIza...", 
+        authDomain: "your-app.firebaseapp.com",
+        projectId: "your-app-id",
+        storageBucket: "your-app.appspot.com",
+        messagingSenderId: "123456789",
+        appId: "1:123456789:web:abcdef"
+    };
+    
+    // 2. YOU MUST REPLACE THIS WITH YOUR REAL VAPID KEY
+    const VAPID_KEY = "BDZW5LIUsZcbZN8HUq7TE-7narmXfpBohJKQQ9R7RH-espBWqK8CpyxheUKqo2a5OWTtxKjY0JhnEDRvD2ZQcO8";
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const messaging = getMessaging(app);
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const messaging = getMessaging(app);
 
-        let deferredPrompt;
+    let deferredPrompt;
 
-        // Analytics Helper
-        const logAction = async (actionName) => {
+    const logAction = async (actionName) => {
+        try {
             await addDoc(collection(db, "analytics"), {
                 event: actionName,
-                platform: navigator.platform,
                 timestamp: serverTimestamp()
             });
-        };
+        } catch (e) { console.error("Firestore error:", e); }
+    };
 
-        // 1. Copy Logic
-        window.copyCode = () => {
-            const code = document.getElementById('couponCode').innerText;
-            navigator.clipboard.writeText(code);
-            const toast = document.getElementById('toast');
-            toast.classList.remove('opacity-0');
-            setTimeout(() => toast.classList.add('opacity-0'), 2000);
-            logAction("Coupon_Copied");
-        };
+    window.copyCode = () => {
+        const code = document.getElementById('couponCode').innerText;
+        navigator.clipboard.writeText(code);
+        const toast = document.getElementById('toast');
+        toast.classList.remove('opacity-0');
+        setTimeout(() => toast.classList.add('opacity-0'), 2000);
+        logAction("Coupon_Copied");
+    };
 
-        // 2. Shop Now Logic
-        document.getElementById('shopBtn').addEventListener('click', () => {
-            logAction("Shop_Now_Click");
-            window.location.href = "https://www.thebrandwebsite.com";
-        });
+    document.getElementById('shopBtn').addEventListener('click', () => {
+        logAction("Shop_Now_Click");
+        window.location.href = "https://www.thebrandwebsite.com";
+    });
 
-        // 3. PWA Install Logic
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-        });
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        console.log("PWA Install prompt ready");
+    });
 
-        document.getElementById('installBtn').addEventListener('click', async () => {
-            logAction("Save_Button_Click");
+    document.getElementById('installBtn').addEventListener('click', async () => {
+        console.log("Install Button Clicked");
+        
+        // A. Handle A2HS (Android/Chrome)
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choice) => {
+                if (choice.outcome === 'accepted') logAction("PWA_Installed");
+            });
+        } else {
+            console.log("A2HS not supported on this browser/platform (Standard for iOS/Desktop)");
+        }
 
-            // Trigger PWA Install
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') logAction("PWA_Installed_Success");
-                deferredPrompt = null;
-            }
+        // B. Handle Notifications (This is the "Save" part)
+        try {
+            const permission = await Notification.requestPermission();
+            if (permission === 'granted') {
+                // IMPORTANT: Register Service Worker with the correct GitHub Path
+                const registration = await navigator.serviceWorker.register('firebase-messaging-sw.js');
+                
+                const token = await getToken(messaging, { 
+                    vapidKey: VAPID_KEY,
+                    serviceWorkerRegistration: registration 
+                });
 
-            // Request Notifications & Save Token
-            try {
-                const permission = await Notification.requestPermission();
-                if (permission === 'granted') {
-                    const token = await getToken(messaging, { vapidKey: VAPID_KEY });
-                    if (token) {
-                        await setDoc(doc(db, "subscribers", token), {
-                            token: token,
-                            subscribedAt: serverTimestamp(),
-                            active: true
-                        });
-                        alert("Pass Saved! Look out for exclusive reminders.");
-                    }
+                if (token) {
+                    await setDoc(doc(db, "subscribers", token), {
+                        token: token,
+                        subscribedAt: serverTimestamp()
+                    });
+                    alert("Pass Saved to Cloud! You will receive reminders.");
+                    logAction("Subscriber_Added");
                 }
-            } catch (err) {
-                console.error("FCM Error:", err);
+            } else {
+                alert("Permission denied. To save the pass, please allow notifications.");
             }
-        });
-    </script>
+        } catch (err) {
+            console.error("Setup Error:", err);
+            alert("Error: " + err.message);
+        }
+    });
+</script>
 </body>
 </html>
