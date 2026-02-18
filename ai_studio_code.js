@@ -3,10 +3,13 @@ importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-comp
 
 // Must match the config in index.html
 firebase.initializeApp({
-    apiKey: "YOUR_API_KEY",
-    projectId: "YOUR_PROJECT_ID",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyCdmxqyvuz2RNYe_HWRceg3JiJkH0c03TY",
+    authDomain: "passta-85c7a.firebaseapp.com",
+    projectId: "passta-85c7a",
+    storageBucket: "passta-85c7a.firebasestorage.app",
+    messagingSenderId: "690886140069",
+    appId: "1:690886140069:web:13048793908361ad19ad4c",
+    measurementId: "G-TPRQP5CKTM"
 });
 
 const messaging = firebase.messaging();
